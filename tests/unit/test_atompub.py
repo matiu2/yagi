@@ -28,6 +28,12 @@ class MockNotification(object):
     def __setitem__(self, key, value):
         self.attrs[key] = value
 
+    def __contains__(self, key):
+        return key in self.attrs
+
+    def items(self):
+        return self.attrs.items()
+
     @property
     def payload(self):
         return self.attrs
@@ -91,7 +97,7 @@ class AtomPubTests(unittest.TestCase):
             return MockResponse(201), None
 
         self.stubs.Set(httplib2.Http, 'request', mock_request)
-        self.handler.handle_messages(messages)
+        self.handler.handle_messages(lambda: messages)
         self.assertEqual(self.called, True)
 
     def test_notify_fails(self):
@@ -105,5 +111,5 @@ class AtomPubTests(unittest.TestCase):
             return MockResponse(404), None
 
         self.stubs.Set(httplib2.Http, 'request', mock_request)
-        self.handler.handle_messages(messages)
+        self.handler.handle_messages(lambda: messages)
         self.assertEqual(self.called, True)
